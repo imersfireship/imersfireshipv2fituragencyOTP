@@ -1478,10 +1478,10 @@
     <div id="otpContainer" class="glass w-full max-w-md rounded-[2.5rem] overflow-hidden p-10 text-center relative">
         
         <div class="flex justify-center mb-6">
-            <div class="p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 shadow-sm">
-                <img src="https://alldigital.web.id/imersfireship/logo.png" alt="iMersFireship" class="h-10 w-auto">
-            </div>
-        </div>
+    <div class="p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 shadow-sm">
+        <img id="otpLogo" src="" alt="Logo" class="h-10 w-auto">
+    </div>
+</div>
 
         <h3 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight mb-2 uppercase italic">Smart Verification</h3>
         <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-6">Keamanan Akses Digital</p>
@@ -1538,6 +1538,15 @@ window.maskInfo = (str, type) => {
 
 window.startOTPProcess = async (wa, email, actionType) => {
     otpActionTarget = actionType; 
+
+    // --- LOGIC LOGO DINAMIS iMersFireship ---
+    const logoEl = document.getElementById('otpLogo');
+    if (logoEl) {
+        // Ambil logo dari appState (biasanya lo simpan di config atau settings)
+        const configLogo = window.appState.config?.logoUrl || window.appState.settings?.logoUrl;
+        logoEl.src = configLogo || 'https://alldigital.web.id/imersfireship/logo.png';
+    }
+
     const isMember = (window.appState.usersData || []).some(u => String(u.wa) === String(wa) || u.email === email);
     
     if (isMember) {
@@ -1549,7 +1558,6 @@ window.startOTPProcess = async (wa, email, actionType) => {
     window.showToast("Mengirim kode OTP...", "info");
 
     try {
-        // PAKE APICALL BIAR GAK ERROR "GOOGLE IS NOT DEFINED"
         const res = await apiCall('requestOTP', { wa, email });
         if (res.success) {
             document.getElementById('otpModal').classList.remove('hidden');
