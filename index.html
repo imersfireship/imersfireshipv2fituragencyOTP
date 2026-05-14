@@ -220,7 +220,7 @@
                             </span>
                         </div>
                     </div>
-                    <button type="button" onclick="submitCheckout()" id="btnSubmitCheckout" class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-green-500/30 transition-all w-full sm:w-auto text-sm">
+                    <button type="button" onclick="window.prepareCheckout()" id="btnSubmitCheckout" class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-green-500/30 transition-all w-full sm:w-auto text-sm">
                         CREATE ORDER
                     </button>
                 </div>
@@ -283,10 +283,10 @@
                     <input type="password" id="regPassword" class="w-full px-4 py-3 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand outline-none transition-all dark:text-white font-medium" required>
                 </div>
                 <div class="pt-2">
-                    <button type="submit" id="regBtn" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-green-500/30 transition-all flex justify-center items-center gap-2 text-lg">
-                        <span>Daftar Sekarang</span>
-                        <i class="ph ph-user-plus"></i>
-                    </button>
+                    <button type="button" onclick="window.prepareRegister()" id="regBtn" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-green-500/30 transition-all flex justify-center items-center gap-2 text-lg">
+    <span>Daftar Sekarang</span>
+    <i class="ph ph-user-plus"></i>
+</button>
                 </div>
                 <div class="text-center text-sm font-bold mt-4">
                     <span class="text-slate-500 dark:text-slate-400">Sudah punya akun?</span>
@@ -1521,10 +1521,10 @@
      JAVASCRIPT LOGIC (app.js)
      ========================================== -->
 <script>
-    // --- TEMPEL MULAI DI BARIS 1524 ---
-
+    // --- BLOK 4: SCRIPT LOGIC OTP (HTML FRIENDLY VERSION) ---
 let otpTimer;
 let currentVerifyData = { wa: '', email: '' };
+let otpActionTarget = ''; 
 
 window.maskInfo = (str, type) => {
     if (!str) return "...";
@@ -1536,24 +1536,41 @@ window.maskInfo = (str, type) => {
     return s.substring(0, 4) + "***" + s.substring(s.length - 2);
 };
 
-window.startOTPProcess = (wa, email) => {
-    const isMember = window.appState.usersData.some(u => String(u.wa) === String(wa) || u.email === email);
+window.startOTPProcess = (wa, email, actionType) => {
+    otpActionTarget = actionType; 
+    const isMember = (window.appState.usersData || []).some(u => String(u.wa) === String(wa) || u.email === email);
+    
     if (isMember) {
-        window.showToast("Member terdeteksi, melanjutkan akses...", "success");
-        return window.saveOrder(); 
+        window.showToast("Member terdeteksi, melanjutkan...", "success");
+        return window.executeFinalAction(); 
     }
+
     currentVerifyData = { wa, email };
     window.showToast("Mengirim kode OTP...", "info");
+
     google.script.run.withSuccessHandler(res => {
         if (res.success) {
             document.getElementById('otpModal').classList.remove('hidden');
             document.getElementById('maskedTarget').innerText = `${window.maskInfo(wa, 'wa')} & ${window.maskInfo(email, 'email')}`;
             window.runOTPTimer();
-            setTimeout(() => document.querySelectorAll('.otp-field')[0].focus(), 500);
+            setTimeout(() => {
+                const first = document.querySelectorAll('.otp-field')[0];
+                if(first) first.focus();
+            }, 500);
         } else {
             window.showToast(res.error, "error");
         }
     }).requestOTP(wa, email);
+};
+
+window.executeFinalAction = () => {
+    if (otpActionTarget === 'checkout') {
+        window.submitCheckout(); 
+    } else if (otpActionTarget === 'register') {
+        // Manggil fungsi submitRegister/saveUser lo
+        if(typeof window.saveUser === 'function') window.saveUser();
+        else if(typeof window.submitRegister === 'function') window.submitRegister();
+    }
 };
 
 window.runOTPTimer = () => {
@@ -1563,8 +1580,8 @@ window.runOTPTimer = () => {
     otpTimer = setInterval(() => {
         let m = Math.floor(sec / 60);
         let s = sec % 60;
-        timerEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        if (sec <= 0) { clearInterval(otpTimer); timerEl.innerText = "EXPIRED"; }
+        if(timerEl) timerEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        if (sec <= 0) { clearInterval(otpTimer); if(timerEl) timerEl.innerText = "EXPIRED"; }
         sec--;
     }, 1000);
 };
@@ -1573,19 +1590,23 @@ window.confirmOTP = () => {
     const inputs = document.querySelectorAll('.otp-field');
     const code = Array.from(inputs).map(i => i.value).join('');
     if (code.length < 6) return window.showToast("Lengkapi 6 digit kode!", "error");
+    
     const btn = document.getElementById('btnVerifyOTP');
-    btn.disabled = true; 
-    btn.innerHTML = '<i class="ph ph-circle-notch animate-spin"></i> MENGECEK...';
+    if(btn) { btn.disabled = true; btn.innerHTML = 'MENGECEK...'; }
+
     google.script.run.withSuccessHandler(res => {
-        btn.disabled = false; btn.innerText = "Verifikasi Sekarang";
+        if(btn) { btn.disabled = false; btn.innerText = "Verifikasi Sekarang"; }
         if (res.success) {
             window.showToast("Berhasil!", "success");
             window.closeOTPModal();
-            window.saveOrder(); 
+            window.executeFinalAction(); 
         } else {
-            document.getElementById('otpContainer').classList.add('shake-it');
-            setTimeout(() => document.getElementById('otpContainer').classList.remove('shake-it'), 500);
+            const container = document.getElementById('otpContainer');
+            if(container) container.classList.add('shake-it');
+            setTimeout(() => container && container.classList.remove('shake-it'), 500);
             window.showToast(res.error, "error");
+            inputs.forEach(i => i.value = '');
+            inputs[0].focus();
         }
     }).verifyOTP(currentVerifyData.wa, code);
 };
@@ -1596,10 +1617,30 @@ document.querySelectorAll('.otp-field').forEach((input, i, all) => {
 });
 
 window.closeOTPModal = () => {
-    document.getElementById('otpModal').classList.add('hidden');
+    const modal = document.getElementById('otpModal');
+    if(modal) modal.classList.add('hidden');
     clearInterval(otpTimer);
 };
 
+// --- PREPARATION HELPERS (SESUAI ID ASLI LO) ---
+
+window.prepareCheckout = () => {
+    // Sesuai ID di form checkout lo
+    const email = document.getElementById('coEmail')?.value.trim();
+    const wa = document.getElementById('coWA')?.value.trim();
+    if(!wa || !email) return window.showToast("Isi Email & WA dulu!", "error");
+    window.startOTPProcess(wa, email, 'checkout');
+};
+
+window.prepareRegister = () => {
+    // Sesuai ID di form register lo: regEmail & regWa (pake 'a' kecil)
+    const email = document.getElementById('regEmail')?.value.trim(); 
+    const wa = document.getElementById('regWa')?.value.trim(); // <--- DIBENERIN DI SINI
+    if(!wa || !email) return window.showToast("Lengkapi data pendaftaran!", "error");
+    window.startOTPProcess(wa, email, 'register');
+};
+    
+    
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpYvrqrQQnj3u0R3kl6FNwnk9Ic5c8jdGOz1LEu2A3wtc4DqXajmCCK5YL6q4a2yfSmg/exec"; // GANTI DENGAN URL WEB APP LO
 
     window.showToast = (m, t = 'success') => {
