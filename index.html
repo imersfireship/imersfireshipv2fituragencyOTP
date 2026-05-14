@@ -5,18 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iMersFireship - Digital Product Platform</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Configure Tailwind to use CSS variables & Dark Mode -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -31,9 +27,6 @@
         }
     </script>
 
-    <!-- Panggil File CSS Eksternal (Opsional, jika ada) -->
-    <link rel="stylesheet" href="style.css">
-
     <style>
         :root {
             --brand-color: #4f46e5;
@@ -43,7 +36,7 @@
         }
         
         body { 
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Montserrat', sans-serif; 
             background-color: #f0fdf4;
             background-image: 
                 radial-gradient(at 40% 20%, hsla(28,100%,74%,0.4) 0px, transparent 50%),
@@ -79,8 +72,6 @@
         
         .dark .glass {
             background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
@@ -91,8 +82,30 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* --- SUNTIKAN BLOK 3.1: OTP STYLING --- */
+        .otp-field:focus {
+            border-color: var(--brand-color) !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+        }
+
+        .shake-it {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .otp-field::-webkit-inner-spin-button,
+        .otp-field::-webkit-outer-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
     </style>
 </head>
 <body class="text-slate-800 dark:text-slate-100 antialiased h-screen overflow-hidden flex flex-col transition-colors duration-300">
@@ -1461,10 +1474,132 @@
         <span id="toastMsg" class="text-sm font-bold">Notification message</span>
     </div>
 
+    <div id="otpModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 font-['Montserrat']">
+    <div id="otpContainer" class="glass w-full max-w-md rounded-[2.5rem] overflow-hidden p-10 text-center relative">
+        
+        <div class="flex justify-center mb-6">
+            <div class="p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 shadow-sm">
+                <img src="https://alldigital.web.id/imersfireship/logo.png" alt="iMersFireship" class="h-10 w-auto">
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight mb-2 uppercase italic">Smart Verification</h3>
+        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-6">Keamanan Akses Digital</p>
+
+        <div class="mb-8">
+            <span id="maskedTarget" class="bg-brand/10 text-brand px-5 py-2 rounded-2xl text-[11px] font-black italic border border-brand/20 shadow-sm">
+                Menghubungkan...
+            </span>
+        </div>
+
+        <div class="flex justify-center gap-2 mb-10" id="otpInputs">
+            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+        </div>
+
+        <button onclick="window.confirmOTP()" id="btnVerifyOTP" class="w-full bg-brand hover:bg-brandHover text-white font-black py-4 rounded-[1.5rem] shadow-[0_10px_25px_rgba(79,70,229,0.3)] transition-all mb-8 uppercase tracking-widest text-sm active:scale-95">
+            Verifikasi Sekarang
+        </button>
+
+        <div class="space-y-4">
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                Kirim ulang tersedia dalam: <span id="timerText" class="text-brand">03:00</span>
+            </p>
+        </div>
+        
+        <button onclick="window.closeOTPModal()" class="mt-8 text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-[0.3em] transition-colors italic border-t border-white/5 pt-4 block w-full">
+            [ Batal & Kembali ]
+        </button>
+    </div>
+</div>
+                
 <!-- ==========================================
      JAVASCRIPT LOGIC (app.js)
      ========================================== -->
 <script>
+    // --- TEMPEL MULAI DI BARIS 1524 ---
+
+let otpTimer;
+let currentVerifyData = { wa: '', email: '' };
+
+window.maskInfo = (str, type) => {
+    if (!str) return "...";
+    if (type === 'email') {
+        const [u, d] = str.split("@");
+        return u.substring(0, 2) + "***@" + d;
+    }
+    const s = String(str);
+    return s.substring(0, 4) + "***" + s.substring(s.length - 2);
+};
+
+window.startOTPProcess = (wa, email) => {
+    const isMember = window.appState.usersData.some(u => String(u.wa) === String(wa) || u.email === email);
+    if (isMember) {
+        window.showToast("Member terdeteksi, melanjutkan akses...", "success");
+        return window.saveOrder(); 
+    }
+    currentVerifyData = { wa, email };
+    window.showToast("Mengirim kode OTP...", "info");
+    google.script.run.withSuccessHandler(res => {
+        if (res.success) {
+            document.getElementById('otpModal').classList.remove('hidden');
+            document.getElementById('maskedTarget').innerText = `${window.maskInfo(wa, 'wa')} & ${window.maskInfo(email, 'email')}`;
+            window.runOTPTimer();
+            setTimeout(() => document.querySelectorAll('.otp-field')[0].focus(), 500);
+        } else {
+            window.showToast(res.error, "error");
+        }
+    }).requestOTP(wa, email);
+};
+
+window.runOTPTimer = () => {
+    let sec = 180;
+    const timerEl = document.getElementById('timerText');
+    clearInterval(otpTimer);
+    otpTimer = setInterval(() => {
+        let m = Math.floor(sec / 60);
+        let s = sec % 60;
+        timerEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        if (sec <= 0) { clearInterval(otpTimer); timerEl.innerText = "EXPIRED"; }
+        sec--;
+    }, 1000);
+};
+
+window.confirmOTP = () => {
+    const inputs = document.querySelectorAll('.otp-field');
+    const code = Array.from(inputs).map(i => i.value).join('');
+    if (code.length < 6) return window.showToast("Lengkapi 6 digit kode!", "error");
+    const btn = document.getElementById('btnVerifyOTP');
+    btn.disabled = true; 
+    btn.innerHTML = '<i class="ph ph-circle-notch animate-spin"></i> MENGECEK...';
+    google.script.run.withSuccessHandler(res => {
+        btn.disabled = false; btn.innerText = "Verifikasi Sekarang";
+        if (res.success) {
+            window.showToast("Berhasil!", "success");
+            window.closeOTPModal();
+            window.saveOrder(); 
+        } else {
+            document.getElementById('otpContainer').classList.add('shake-it');
+            setTimeout(() => document.getElementById('otpContainer').classList.remove('shake-it'), 500);
+            window.showToast(res.error, "error");
+        }
+    }).verifyOTP(currentVerifyData.wa, code);
+};
+
+document.querySelectorAll('.otp-field').forEach((input, i, all) => {
+    input.addEventListener('input', (e) => { if (e.target.value.length === 1 && i < all.length - 1) all[i + 1].focus(); });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !input.value && i > 0) all[i - 1].focus(); });
+});
+
+window.closeOTPModal = () => {
+    document.getElementById('otpModal').classList.add('hidden');
+    clearInterval(otpTimer);
+};
+
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpYvrqrQQnj3u0R3kl6FNwnk9Ic5c8jdGOz1LEu2A3wtc4DqXajmCCK5YL6q4a2yfSmg/exec"; // GANTI DENGAN URL WEB APP LO
 
     window.showToast = (m, t = 'success') => {
