@@ -1521,7 +1521,7 @@
      JAVASCRIPT LOGIC (app.js)
      ========================================== -->
 <script>
-    // --- BLOK 4: SCRIPT LOGIC OTP (HTML FRIENDLY VERSION) ---
+    // --- BLOK 4 FINAL: VERCEL-FRIENDLY OTP ---
 let otpTimer;
 let currentVerifyData = { wa: '', email: '' };
 let otpActionTarget = ''; 
@@ -1536,7 +1536,7 @@ window.maskInfo = (str, type) => {
     return s.substring(0, 4) + "***" + s.substring(s.length - 2);
 };
 
-window.startOTPProcess = (wa, email, actionType) => {
+window.startOTPProcess = async (wa, email, actionType) => {
     otpActionTarget = actionType; 
     const isMember = (window.appState.usersData || []).some(u => String(u.wa) === String(wa) || u.email === email);
     
@@ -1548,7 +1548,9 @@ window.startOTPProcess = (wa, email, actionType) => {
     currentVerifyData = { wa, email };
     window.showToast("Mengirim kode OTP...", "info");
 
-    google.script.run.withSuccessHandler(res => {
+    try {
+        // PAKE APICALL BIAR GAK ERROR "GOOGLE IS NOT DEFINED"
+        const res = await apiCall('requestOTP', { wa, email });
         if (res.success) {
             document.getElementById('otpModal').classList.remove('hidden');
             document.getElementById('maskedTarget').innerText = `${window.maskInfo(wa, 'wa')} & ${window.maskInfo(email, 'email')}`;
@@ -1558,19 +1560,16 @@ window.startOTPProcess = (wa, email, actionType) => {
                 if(first) first.focus();
             }, 500);
         } else {
-            window.showToast(res.error, "error");
+            window.showToast(res.error || "Gagal kirim OTP", "error");
         }
-    }).requestOTP(wa, email);
+    } catch (err) {
+        window.showToast("Sistem OTP Sibuk, coba lagi nanti", "error");
+    }
 };
 
 window.executeFinalAction = () => {
-    if (otpActionTarget === 'checkout') {
-        window.submitCheckout(); 
-    } else if (otpActionTarget === 'register') {
-        // Manggil fungsi submitRegister/saveUser lo
-        if(typeof window.saveUser === 'function') window.saveUser();
-        else if(typeof window.submitRegister === 'function') window.submitRegister();
-    }
+    if (otpActionTarget === 'checkout') window.submitCheckout();
+    else if (otpActionTarget === 'register') window.saveUser();
 };
 
 window.runOTPTimer = () => {
@@ -1578,15 +1577,14 @@ window.runOTPTimer = () => {
     const timerEl = document.getElementById('timerText');
     clearInterval(otpTimer);
     otpTimer = setInterval(() => {
-        let m = Math.floor(sec / 60);
-        let s = sec % 60;
+        let m = Math.floor(sec / 60); let s = sec % 60;
         if(timerEl) timerEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         if (sec <= 0) { clearInterval(otpTimer); if(timerEl) timerEl.innerText = "EXPIRED"; }
         sec--;
     }, 1000);
 };
 
-window.confirmOTP = () => {
+window.confirmOTP = async () => {
     const inputs = document.querySelectorAll('.otp-field');
     const code = Array.from(inputs).map(i => i.value).join('');
     if (code.length < 6) return window.showToast("Lengkapi 6 digit kode!", "error");
@@ -1594,21 +1592,25 @@ window.confirmOTP = () => {
     const btn = document.getElementById('btnVerifyOTP');
     if(btn) { btn.disabled = true; btn.innerHTML = 'MENGECEK...'; }
 
-    google.script.run.withSuccessHandler(res => {
+    try {
+        const res = await apiCall('verifyOTP', { wa: currentVerifyData.wa, otp: code });
         if(btn) { btn.disabled = false; btn.innerText = "Verifikasi Sekarang"; }
+        
         if (res.success) {
             window.showToast("Berhasil!", "success");
             window.closeOTPModal();
             window.executeFinalAction(); 
         } else {
-            const container = document.getElementById('otpContainer');
-            if(container) container.classList.add('shake-it');
-            setTimeout(() => container && container.classList.remove('shake-it'), 500);
-            window.showToast(res.error, "error");
+            document.getElementById('otpContainer').classList.add('shake-it');
+            setTimeout(() => document.getElementById('otpContainer').classList.remove('shake-it'), 500);
+            window.showToast(res.error || "Kode Salah", "error");
             inputs.forEach(i => i.value = '');
             inputs[0].focus();
         }
-    }).verifyOTP(currentVerifyData.wa, code);
+    } catch (err) {
+        if(btn) { btn.disabled = false; btn.innerText = "Verifikasi Sekarang"; }
+        window.showToast("Koneksi gagal", "error");
+    }
 };
 
 document.querySelectorAll('.otp-field').forEach((input, i, all) => {
@@ -1617,15 +1619,11 @@ document.querySelectorAll('.otp-field').forEach((input, i, all) => {
 });
 
 window.closeOTPModal = () => {
-    const modal = document.getElementById('otpModal');
-    if(modal) modal.classList.add('hidden');
+    document.getElementById('otpModal').classList.add('hidden');
     clearInterval(otpTimer);
 };
 
-// --- PREPARATION HELPERS (SESUAI ID ASLI LO) ---
-
 window.prepareCheckout = () => {
-    // Sesuai ID di form checkout lo
     const email = document.getElementById('coEmail')?.value.trim();
     const wa = document.getElementById('coWA')?.value.trim();
     if(!wa || !email) return window.showToast("Isi Email & WA dulu!", "error");
@@ -1633,9 +1631,8 @@ window.prepareCheckout = () => {
 };
 
 window.prepareRegister = () => {
-    // Sesuai ID di form register lo: regEmail & regWa (pake 'a' kecil)
     const email = document.getElementById('regEmail')?.value.trim(); 
-    const wa = document.getElementById('regWa')?.value.trim(); // <--- DIBENERIN DI SINI
+    const wa = document.getElementById('regWa')?.value.trim();
     if(!wa || !email) return window.showToast("Lengkapi data pendaftaran!", "error");
     window.startOTPProcess(wa, email, 'register');
 };
