@@ -83,8 +83,8 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
 
-        /* --- SUNTIKAN BLOK 3.1: OTP STYLING --- */
-        .otp-field:focus {
+        /* --- SUNTIKAN BLOK 3.1:  STYLING --- */
+        .-field:focus {
             border-color: var(--brand-color) !important;
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
@@ -102,8 +102,8 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        .otp-field::-webkit-inner-spin-button,
-        .otp-field::-webkit-outer-spin-button {
+        .-field::-webkit-inner-spin-button,
+        .-field::-webkit-outer-spin-button {
             -webkit-appearance: none; margin: 0;
         }
     </style>
@@ -1474,12 +1474,12 @@
         <span id="toastMsg" class="text-sm font-bold">Notification message</span>
     </div>
 
-    <div id="otpModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 font-['Montserrat']">
-    <div id="otpContainer" class="glass w-full max-w-md rounded-[2.5rem] overflow-hidden p-10 text-center relative">
+    <div id="Modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 font-['Montserrat']">
+    <div id="Container" class="glass w-full max-w-md rounded-[2.5rem] overflow-hidden p-10 text-center relative">
         
         <div class="flex justify-center mb-6">
     <div class="p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 shadow-sm">
-        <img id="otpLogo" src="" alt="Logo" class="h-10 w-auto">
+        <img id="Logo" src="" alt="Logo" class="h-10 w-auto">
     </div>
 </div>
 
@@ -1492,16 +1492,16 @@
             </span>
         </div>
 
-        <div class="flex justify-center gap-2 mb-10" id="otpInputs">
-            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
-            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
-            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
-            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
-            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
-            <input type="number" maxlength="1" class="otp-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+        <div class="flex justify-center gap-2 mb-10" id="Inputs">
+            <input type="number" maxlength="1" class="-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
+            <input type="number" maxlength="1" class="-field w-11 h-14 text-center text-2xl font-black rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-white outline-none transition-all">
         </div>
 
-        <button onclick="window.confirmOTP()" id="btnVerifyOTP" class="w-full bg-brand hover:bg-brandHover text-white font-black py-4 rounded-[1.5rem] shadow-[0_10px_25px_rgba(79,70,229,0.3)] transition-all mb-8 uppercase tracking-widest text-sm active:scale-95">
+        <button onclick="window.confirm()" id="btnVerify" class="w-full bg-brand hover:bg-brandHover text-white font-black py-4 rounded-[1.5rem] shadow-[0_10px_25px_rgba(79,70,229,0.3)] transition-all mb-8 uppercase tracking-widest text-sm active:scale-95">
             Verifikasi Sekarang
         </button>
 
@@ -1511,7 +1511,7 @@
             </p>
         </div>
         
-        <button onclick="window.closeOTPModal()" class="mt-8 text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-[0.3em] transition-colors italic border-t border-white/5 pt-4 block w-full">
+        <button onclick="window.closeModal()" class="mt-8 text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-[0.3em] transition-colors italic border-t border-white/5 pt-4 block w-full">
             [ Batal & Kembali ]
         </button>
     </div>
@@ -1538,6 +1538,20 @@ window.maskInfo = (str, type) => {
 
 window.startOTPProcess = async (wa, email, actionType) => {
     otpActionTarget = actionType; 
+
+    // ============================================================
+    // 🔒 GATES: LOGIC SAKLAR GLOBAL OTP ON/OFF (ANTI-CRASH)
+    // ============================================================
+    const statusOtpSistem = window.appState && window.appState.config && window.appState.config.STATUS_OTP 
+                            ? String(window.appState.config.STATUS_OTP).toUpperCase().trim() 
+                            : "OFF"; 
+
+    console.log("🛡️ [iMers Engine] Status Proteksi OTP Global:", statusOtpSistem);
+
+    if (statusOtpSistem === "OFF") {
+        console.log("⚡ OTP Mati / User Lama Terdeteksi. Langsung eksekusi tindakan final...");
+        return window.executeFinalAction(); 
+    }
 
     // --- LOGIC LOGO DINAMIS iMersFireship ---
     const logoEl = document.getElementById('otpLogo');
