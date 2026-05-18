@@ -2156,6 +2156,29 @@ window.prepareRegister = () => {
         }
         window.applyLogo(set.logoUrl);
         
+        // ============================================================
+        // 🔒 FIX SAKLAR LOGO FRONTEND: HALAMAN LOGIN / AUTH VIEW
+        // ============================================================
+        const authLogoImg = document.getElementById('appLogoAuth');
+        const authIconRocket = document.getElementById('appIconAuth');
+        
+        if (set.logoUrl) {
+            // Kalau logo kustom diset, munculkan gambar dan sembunyikan roket bawaan
+            if (authLogoImg) {
+                authLogoImg.src = set.logoUrl;
+                authLogoImg.classList.remove('hidden');
+            }
+            if (authIconRocket) authIconRocket.classList.add('hidden');
+        } else {
+            // Kalau logo kustom kosong, balikkan ke ikon roket bawaan
+            if (authLogoImg) {
+                authLogoImg.src = '';
+                authLogoImg.classList.add('hidden');
+            }
+            if (authIconRocket) authIconRocket.classList.remove('hidden');
+        }
+        // ============================================================
+        
         if (document.getElementById('settingAppName')) document.getElementById('settingAppName').value = set.appName || 'iMersFireship';
         if (document.getElementById('settingColor')) document.getElementById('settingColor').value = set.primaryColor || '#4f46e5';
         if (document.getElementById('settingColorText')) document.getElementById('settingColorText').value = set.primaryColor || '#4f46e5';
